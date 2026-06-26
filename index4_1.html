@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MaterialPro Customizado com Tabler</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Variáveis de Identidade Visual */
+        :root {
+            --topbar-bg: #1e88e5; 
+            --sidebar-width: 260px;
+            --sidebar-mini-width: 75px;
+            --topbar-height: 64px;
+            --body-bg: #eef5f9;
+            --text-color: #54667a;
+            
+            /* CONTROLE DOS ARREDONDADOS */
+            --radius-cards: 24px;       
+            --radius-inputs: 12px;      
+            --radius-buttons: 50rem;    
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--body-bg);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* 1. TOPBAR / HEADER */
+        .topbar {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            height: var(--topbar-height);
+            background-color: var(--topbar-bg);
+            z-index: 1050;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .topbar .logo {
+            width: var(--sidebar-width);
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: width 0.3s ease;
+        }
+        .topbar a { color: white; text-decoration: none; }
+
+        /* 2. SIDEBAR E SEÇÃO DE PERFIL COM GRADIENTE FIXO */
+        .sidebar {
+            position: fixed;
+            top: var(--topbar-height); left: 0;
+            width: var(--sidebar-width);
+            height: calc(100vh - var(--topbar-height));
+            background: #fff;
+            box-shadow: 1px 0 20px rgba(0,0,0,0.04);
+            transition: width 0.3s ease, box-shadow 0.3s ease;
+            overflow-y: auto; overflow-x: hidden;
+            z-index: 1040;
+        }
+        
+        /* Área de Perfil: Mantém a altura e o gradiente unificados */
+        .sidebar-profile {
+            position: relative;
+            height: 150px; 
+            background: linear-gradient(135deg, #f53d7a 0%, #fbb03b 55%, #00e5ff 100%);
+            padding: 20px 20px 0 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-profile img {
+            width: 65px; 
+            height: 65px; 
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.4); 
+            object-fit: cover;
+            display: block;
+            transition: all 0.3s ease;
+        }
+        
+        /* Faixa escura inferior com o nome do usuário */
+        .profile-banner {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(43, 38, 88, 0.65); 
+            padding: 8px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.88rem;
+            font-weight: 500;
+        }
+
+        /* Estilização dos Títulos (Personal / Apps) */
+        .sidebar-menu { list-style: none; padding: 12px 0; margin: 0; }
+        .sidebar-menu .menu-title {
+            padding: 24px 24px 8px; 
+            font-size: 0.8rem; 
+            font-weight: 700;
+            color: #2f3542; 
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .sidebar-menu li a {
+            display: flex; align-items: center; padding: 12px 24px;
+            color: #607d8b; font-size: 0.88rem; text-decoration: none; white-space: nowrap;
+        }
+        .sidebar-menu li a:hover, .sidebar-menu li.active > a {
+            color: var(--topbar-bg); background: rgba(30, 136, 229, 0.04); font-weight: 500;
+        }
+        .sidebar-menu li a i.menu-icon { font-size: 1.3rem; min-width: 38px; color: #90a4ae; }
+
+        /* Submenus */
+        .sidebar-submenu { list-style: none; padding: 5px 0; margin: 0; background: #f8f9fa; }
+        .sidebar-submenu li a { padding: 10px 24px 10px 62px; font-size: 0.85rem; }
+        .submenu-arrow { transition: transform 0.2s ease; font-size: 0.9rem; }
+        .has-submenu a[aria-expanded="true"] .submenu-arrow { transform: rotate(180deg); }
+
+        /* 3. MAIN CONTENT */
+        .main-content {
+            margin-top: var(--topbar-height);
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+            transition: margin-left 0.3s ease;
+            min-height: calc(100vh - var(--topbar-height));
+        }
+
+        .custom-tabs .nav-link {
+            border: none; color: #54667a; font-weight: 500;
+            padding: 12px 20px; border-bottom: 2px solid transparent;
+            font-size: 0.9rem; display: flex; align-items: center; gap: 8px;
+        }
+        .custom-tabs .nav-link.active {
+            color: var(--topbar-bg) !important; background: transparent !important;
+            border-bottom: 2px solid var(--topbar-bg) !important;
+        }
+
+        /* Cartões Brancos Arredondados */
+        .card {
+            border: none !important;
+            box-shadow: 0px 4px 25px 0px rgba(0, 0, 0, 0.04);
+            border-radius: var(--radius-cards) !important;
+            background-color: #ffffff;
+        }
+
+        /* Inputs Arredondados */
+        .form-control {
+            border-color: #e9ecef;
+            font-size: 0.88rem;
+            padding: 10px 16px;
+            border-radius: var(--radius-inputs) !important;
+        }
+
+        /* Botões Formato Pill */
+        .btn {
+            border-radius: var(--radius-buttons) !important;
+            padding: 10px 28px;
+            font-weight: 500;
+            font-size: 0.88rem;
+        }
+        .btn-primary { background-color: var(--topbar-bg); border-color: var(--topbar-bg); }
+        .btn-light { background-color: #f8f9fa; border-color: #f8f9fa; color: #54667a; }
+
+        .mini-chart { display: flex; align-items: flex-end; gap: 3px; height: 30px; }
+        .mini-chart .bar { width: 4px; background-color: var(--topbar-bg); border-radius: 2px; }
+
+        .btn-setting-float {
+            position: fixed; bottom: 25px; right: 25px;
+            width: 50px; height: 50px; border-radius: 50% !important;
+            background-color: var(--topbar-bg); color: white;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 15px rgba(30, 136, 229, 0.4); z-index: 999;
+        }
+
+        /* ========================================================
+           COMPORTAMENTO DO MINI-SIDEBAR (MANTER GRADIENTE E ALTURA)
+           ======================================================== */
+        @media (min-width: 768px) {
+            body.mini-sidebar .sidebar { width: var(--sidebar-mini-width); }
+            body.mini-sidebar .main-content { margin-left: var(--sidebar-mini-width); }
+            body.mini-sidebar .topbar .logo { width: var(--sidebar-mini-width); overflow: hidden; }
+            body.mini-sidebar .topbar .logo span { display: none; }
+            body.mini-sidebar .sidebar .menu-text,
+            body.mini-sidebar .sidebar .menu-title,
+            body.mini-sidebar .sidebar .submenu-arrow,
+            body.mini-sidebar .sidebar-submenu { display: none !important; }
+            
+            /* Garante que a altura e o gradiente fiquem iguaizinhos ao menu aberto */
+            body.mini-sidebar .sidebar-profile { 
+                height: 150px !important; 
+                padding: 0 !important; 
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            
+            /* Ajusta apenas o tamanho do avatar para se adequar ao menu estreito */
+            body.mini-sidebar .sidebar-profile img { 
+                width: 45px; 
+                height: 45px; 
+                border: 2px solid rgba(255,255,255,0.4);
+                margin: 0 !important;
+            }
+            body.mini-sidebar .profile-banner { display: none !important; }
+        }
+
+        /* ========================================================
+           HOVER-EXPAND: expande visualmente sem mover o conteúdo
+           ======================================================== */
+        @media (min-width: 768px) {
+            body.mini-sidebar.hover-expanded .sidebar {
+                width: var(--sidebar-width);
+                box-shadow: 4px 0 20px rgba(0, 0, 0, 0.12);
+                z-index: 1045;
+            }
+            body.mini-sidebar.hover-expanded .sidebar .menu-text,
+            body.mini-sidebar.hover-expanded .sidebar .menu-title,
+            body.mini-sidebar.hover-expanded .sidebar .submenu-arrow {
+                display: inline !important;
+            }
+            /* Submenus: deixa o Bootstrap collapse controlar via classe .show */
+            body.mini-sidebar.hover-expanded .sidebar .sidebar-submenu.show {
+                display: block !important;
+            }
+            body.mini-sidebar.hover-expanded .sidebar .sidebar-submenu:not(.show) {
+                display: none !important;
+            }
+            body.mini-sidebar.hover-expanded .sidebar-profile {
+                padding: 20px 20px 0 20px !important;
+                align-items: flex-start !important;
+                justify-content: flex-start !important;
+            }
+            body.mini-sidebar.hover-expanded .sidebar-profile img {
+                width: 65px !important;
+                height: 65px !important;
+            }
+            body.mini-sidebar.hover-expanded .profile-banner {
+                display: flex !important;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .sidebar { left: -260px; }
+            .main-content { margin-left: 0; padding: 15px; }
+            .topbar .logo span { display: none; }
+            body.show-sidebar .sidebar { left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="topbar">
+        <div class="logo">
+            <i class="ti ti-brand-abstract fs-2 me-2"></i>
+            <span>MATERIALPRO</span>
+        </div>
+        
+        <a href="#" id="toggle-sidebar" class="me-3 fs-2">
+            <i class="ti ti-menu-2"></i>
+        </a>
+
+        <div class="d-none d-md-flex align-items-center gap-3 ms-2">
+            <!-- <a href="#" class="opacity-75"><i class="ti ti-search fs-2"></i></a> -->
+            <!-- <a href="#" class="opacity-75"><i class="ti ti-layout-grid fs-2"></i></a> -->
+        </div>
+
+        <div class="ms-auto d-flex align-items-center gap-3">
+            <a href="#" class="fs-2"><i class="ti ti-bell fs-2"></i></a>
+            <a href="#" class="fs-2"><i class="ti ti-message fs-2"></i></a>
+            <img src="https://i.pravatar.cc/150?img=33" alt="user" class="rounded-circle border border-2 border-white" width="35" height="35">
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <div class="sidebar-profile">
+            <img src="https://i.pravatar.cc/150?img=33" alt="user">
+            <div class="profile-banner menu-text">
+                <span>Markarn Doe</span>
+                <i class="ti ti-chevron-down fs-5"></i>
+            </div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="menu-title">Personal</li>
+            <li><a href="#"><i class="ti ti-user menu-icon"></i><span class="menu-text">General</span></a></li>
+            <li><a href="#"><i class="ti ti-diamond menu-icon"></i><span class="menu-text">Classic</span></a></li>
+            <li><a href="#"><i class="ti ti-chart-pie menu-icon"></i><span class="menu-text">Analytical</span></a></li>
+            <li><a href="#"><i class="ti ti-speakerphone menu-icon"></i><span class="menu-text">Campaign</span></a></li>
+            <li><a href="#"><i class="ti ti-dashboard menu-icon"></i><span class="menu-text">Modern</span></a></li>
+            <li><a href="#"><i class="ti ti-shopping-cart menu-icon"></i><span class="menu-text">Ecommerce</span></a></li>
+            
+            <li class="has-submenu">
+                <a href="#submenu-front" data-bs-toggle="collapse" class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <i class="ti ti-browser menu-icon"></i>
+                        <span class="menu-text">Front Pages</span>
+                    </div>
+                    <i class="ti ti-chevron-down submenu-arrow menu-text"></i>
+                </a>
+                <ul class="collapse sidebar-submenu" id="submenu-front">
+                    <li><a href="#">Homepage</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </li>
+
+            <li class="menu-title">Apps</li>
+            <li><a href="#"><i class="ti ti-calendar menu-icon"></i><span class="menu-text">Calendar</span></a></li>
+            <li><a href="#"><i class="ti ti-layout-kanban menu-icon"></i><span class="menu-text">Kanban</span></a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <div class="container-fluid">
+            
+            <div class="row align-items-center mb-4">
+                <div class="col-md-6">
+                    <h3 class="m-0 text-dark fw-medium" style="font-weight: 500;">Account Setting</h3>
+                    <div class="text-muted small">Home <i class="ti ti-chevron-right fs-6 mx-1"></i> Account Setting</div>
+                </div>
+                <div class="col-md-6 d-none d-md-flex justify-content-end align-items-center gap-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="text-end">
+                            <div class="text-muted small">This Month</div>
+                            <strong class="text-dark">$58,256</strong>
+                        </div>
+                        <div class="mini-chart">
+                            <div class="bar" style="height: 12px;"></div>
+                            <div class="bar" style="height: 18px;"></div>
+                            <div class="bar" style="height: 15px;"></div>
+                            <div class="bar" style="height: 25px;"></div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="text-end">
+                            <div class="text-muted small">Last Month</div>
+                            <strong class="text-dark">$58,256</strong>
+                        </div>
+                        <div class="mini-chart">
+                            <div class="bar" style="height: 10px; background-color: #26c6da;"></div>
+                            <div class="bar" style="height: 14px; background-color: #26c6da;"></div>
+                            <div class="bar" style="height: 22px; background-color: #26c6da;"></div>
+                            <div class="bar" style="height: 28px; background-color: #26c6da;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <ul class="nav nav-tabs custom-tabs mb-4 border-bottom-0">
+                <li class="nav-item"><a class="nav-link active" href="#"><i class="ti ti-user-circle fs-3"></i> Account</a></li>
+                <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-bell fs-3"></i> Notifications</a></li>
+                <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-file-invoice fs-3"></i> Bills</a></li>
+                <li class="nav-item"><a class="nav-link" href="#"><i class="ti ti-lock fs-3"></i> Security</a></li>
+            </ul>
+
+            <div class="row g-4">
+                <div class="col-lg-5 col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body p-4 text-center d-flex flex-column justify-content-between">
+                            <div>
+                                <h4 class="card-title text-start text-dark fw-medium mb-1" style="font-weight: 500;">Change Profile</h4>
+                                <p class="text-muted text-start small mb-4">Change your profile picture from here</p>
+                                <div class="my-4">
+                                    <img src="https://i.pravatar.cc/150?img=33" alt="avatar" class="rounded-circle border border-4 border-light shadow-sm" width="130" height="130" style="object-fit: cover;">
+                                </div>
+                            </div>
+                            <div>
+                                <div class="d-flex justify-content-center gap-2 mb-3">
+                                    <button class="btn btn-primary px-4">Upload</button>
+                                    <button class="btn btn-light px-4 text-danger" style="background-color: #fff0f2;">Reset</button>
+                                </div>
+                                <p class="text-muted small m-0">Allowed JPG, GIF or PNG. Max size of 800K</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-7 col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body p-4">
+                            <h4 class="card-title text-dark fw-medium mb-1" style="font-weight: 500;">Change Password</h4>
+                            <p class="text-muted small mb-4">To change your password please confirm here</p>
+                            <form>
+                                <div class="mb-3">
+                                    <label class="form-label text-dark fw-normal small">Current Password</label>
+                                    <input type="password" class="form-control" value="xxxxxxxxxxxx">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-dark fw-normal small">New Password</label>
+                                    <input type="password" class="form-control" value="xxxxxxxxxxxx">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-dark fw-normal small">Confirm Password</label>
+                                    <input type="password" class="form-control" value="xxxxxxxxxxxx">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body p-4">
+                            <h4 class="card-title text-dark fw-medium mb-1" style="font-weight: 500;">Personal Details</h4>
+                            <p class="text-muted small mb-4">To change your personal detail, edit and save from here</p>
+                            <form>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label text-dark fw-normal small">Your Name</label>
+                                        <input type="text" class="form-control" value="Markarn Doe">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-dark fw-normal small">Store Name</label>
+                                        <input type="text" class="form-control" value="Maxima Studio">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-dark fw-normal small">Email Address</label>
+                                        <input type="email" class="form-control" value="markarn@example.com">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-dark fw-normal small">Contact Number</label>
+                                        <input type="text" class="form-control" value="+123 456 789">
+                                    </div>
+                                    <div class="col-12 text-end mt-4">
+                                        <button type="button" class="btn btn-primary px-4">Save Changes</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <a href="#" class="btn-setting-float">
+        <i class="ti ti-settings fs-2"></i>
+    </a>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/js/tabler.min.js"></script>
+    
+    <script>
+        const sidebar = document.querySelector('.sidebar');
+        let isHoverExpanded = false;
+
+        // Clique no botão hamburguer: alterna entre mini e normal
+        document.getElementById('toggle-sidebar').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (window.innerWidth < 768) {
+                document.body.classList.toggle('show-sidebar');
+            } else {
+                document.body.classList.toggle('mini-sidebar');
+                // Se estava hover-expanded, remove ao clicar
+                if (isHoverExpanded) {
+                    document.body.classList.remove('hover-expanded');
+                    isHoverExpanded = false;
+                }
+            }
+        });
+
+        // Hover: expande temporariamente quando o menu está retraído
+        sidebar.addEventListener('mouseenter', function() {
+            if (window.innerWidth >= 768 && document.body.classList.contains('mini-sidebar')) {
+                document.body.classList.add('hover-expanded');
+                isHoverExpanded = true;
+            }
+        });
+
+        sidebar.addEventListener('mouseleave', function() {
+            if (isHoverExpanded) {
+                // Fecha todos os submenus abertos antes de retrair
+                sidebar.querySelectorAll('.sidebar-submenu.show').forEach(function(sub) {
+                    var bsCollapse = bootstrap.Collapse.getInstance(sub);
+                    if (bsCollapse) bsCollapse.hide();
+                    else sub.classList.remove('show');
+                });
+                document.body.classList.remove('hover-expanded');
+                isHoverExpanded = false;
+            }
+        });
+
+        // Mobile: fecha ao clicar no conteúdo
+        document.querySelector('.main-content').addEventListener('click', function() {
+            if (window.innerWidth < 768 && document.body.classList.contains('show-sidebar')) {
+                document.body.classList.remove('show-sidebar');
+            }
+        });
+    </script>
+</body>
+</html>
